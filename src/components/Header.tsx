@@ -28,6 +28,12 @@ export const Header: React.FC<Props> = ({
 
     const trimmedTitle = title.trim();
 
+    if (!trimmedTitle) {
+      setTitle('');
+
+      return;
+    }
+
     onAdd(trimmedTitle)
       .then(() => {
         setTitle('');

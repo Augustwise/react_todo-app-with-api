@@ -7,10 +7,10 @@ import { ErrorMessage } from '../types/ErrorMessage';
 export const useTodos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
-  const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [filter, setFilter] = useState<Filter>(Filter.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [deletingTodo, setDeletingTodo] = useState<number | null>(null);
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
   const todoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const useTodos = () => {
 
         setTodos(loadedTodos);
       } catch {
-        setErrorMessage(ErrorMessage.Load);
+        setErrorMessage(ErrorMessage.LOAD);
       }
     };
 
@@ -65,11 +65,11 @@ export const useTodos = () => {
   );
 
   const filteredTodos = useMemo(() => {
-    if (filter === Filter.Active) {
+    if (filter === Filter.ACTIVE) {
       return todos.filter(todo => !todo.completed);
     }
 
-    if (filter === Filter.Completed) {
+    if (filter === Filter.COMPLETED) {
       return todos.filter(todo => todo.completed);
     }
 
@@ -80,7 +80,7 @@ export const useTodos = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage(ErrorMessage.Title);
+      setErrorMessage(ErrorMessage.TITLE);
 
       throw new Error();
     }
@@ -103,7 +103,7 @@ export const useTodos = () => {
 
       setTodos(prevTodos => [...prevTodos, newTodo]);
     } catch {
-      setErrorMessage(ErrorMessage.Add);
+      setErrorMessage(ErrorMessage.ADD);
       throw new Error();
     } finally {
       setIsAdding(false);
@@ -116,6 +116,7 @@ export const useTodos = () => {
     currentCompleted: boolean,
   ) => {
     setErrorMessage('');
+    setLoadingTodos(previous => [...previous, todoId]);
 
     try {
       const updatedTodo = await todosApi.updateTodo(todoId, !currentCompleted);
@@ -124,22 +125,24 @@ export const useTodos = () => {
         previousTodos.map(todo => (todo.id === todoId ? updatedTodo : todo)),
       );
     } catch {
-      setErrorMessage(ErrorMessage.Update);
+      setErrorMessage(ErrorMessage.UPDATE);
+    } finally {
+      setLoadingTodos(previous => previous.filter(id => id !== todoId));
     }
   };
 
   const handleDeleteTodo = async (todoId: number) => {
     setErrorMessage('');
-    setDeletingTodo(todoId);
+    setLoadingTodos(previous => [...previous, todoId]);
 
     try {
       await todosApi.deleteTodo(todoId);
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch {
-      setErrorMessage(ErrorMessage.Delete);
+      setErrorMessage(ErrorMessage.DELETE);
     } finally {
-      setDeletingTodo(null);
+      setLoadingTodos(previous => previous.filter(id => id !== todoId));
     }
   };
 
@@ -147,6 +150,9 @@ export const useTodos = () => {
     setErrorMessage('');
 
     const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    setLoadingTodos(previous => [...previous, ...completedIds]);
 
     const results = await Promise.allSettled(
       completedTodos.map(todo => todosApi.deleteTodo(todo.id)),
@@ -170,8 +176,12 @@ export const useTodos = () => {
     );
 
     if (hasErrors) {
-      setErrorMessage(ErrorMessage.Delete);
+      setErrorMessage(ErrorMessage.DELETE);
     }
+
+    setLoadingTodos(previous =>
+      previous.filter(id => !completedIds.includes(id)),
+    );
   };
 
   const handleToggleAll = async () => {
@@ -180,6 +190,10 @@ export const useTodos = () => {
     const todosToUpdate = allCompleted
       ? todos
       : todos.filter(todo => !todo.completed);
+
+    const idsToUpdate = todosToUpdate.map(todo => todo.id);
+
+    setLoadingTodos(prev => [...prev, ...idsToUpdate]);
 
     try {
       await Promise.all(
@@ -190,7 +204,9 @@ export const useTodos = () => {
         prevTodos.map(todo => ({ ...todo, completed: !allCompleted })),
       );
     } catch {
-      setErrorMessage(ErrorMessage.Update);
+      setErrorMessage(ErrorMessage.UPDATE);
+    } finally {
+      setLoadingTodos(prev => prev.filter(id => !idsToUpdate.includes(id)));
     }
   };
 
@@ -202,7 +218,7 @@ export const useTodos = () => {
     setFilter,
     tempTodo,
     isAdding,
-    deletingTodo,
+    loadingTodos,
     todoInput,
     activeTodosCount,
     hasCompletedTodos,

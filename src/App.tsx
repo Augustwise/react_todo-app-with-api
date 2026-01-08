@@ -16,7 +16,7 @@ export const App: React.FC = () => {
     setFilter,
     tempTodo,
     isAdding,
-    deletingTodo,
+    loadingTodos,
     todoInput,
     activeTodosCount,
     hasCompletedTodos,
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           onStatusChange={handleTodoStatusChange}
           tempTodo={tempTodo}
-          deletingTodo={deletingTodo}
+          loadingTodos={loadingTodos}
         />
 
         {(todos.length > 0 || tempTodo) && (

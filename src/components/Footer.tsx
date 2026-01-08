@@ -27,10 +27,10 @@ export const Footer: React.FC<Props> = ({
         href="#/"
         onClick={e => {
           e.preventDefault();
-          onFilterChange(Filter.All);
+          onFilterChange(Filter.ALL);
         }}
         className={classNames('filter__link', {
-          selected: filter === Filter.All,
+          selected: filter === Filter.ALL,
         })}
         data-cy="FilterLinkAll"
       >
@@ -41,10 +41,10 @@ export const Footer: React.FC<Props> = ({
         href="#/active"
         onClick={e => {
           e.preventDefault();
-          onFilterChange(Filter.Active);
+          onFilterChange(Filter.ACTIVE);
         }}
         className={classNames('filter__link', {
-          selected: filter === Filter.Active,
+          selected: filter === Filter.ACTIVE,
         })}
         data-cy="FilterLinkActive"
       >
@@ -55,10 +55,10 @@ export const Footer: React.FC<Props> = ({
         href="#/completed"
         onClick={e => {
           e.preventDefault();
-          onFilterChange(Filter.Completed);
+          onFilterChange(Filter.COMPLETED);
         }}
         className={classNames('filter__link', {
-          selected: filter === Filter.Completed,
+          selected: filter === Filter.COMPLETED,
         })}
         data-cy="FilterLinkCompleted"
       >
