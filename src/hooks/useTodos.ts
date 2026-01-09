@@ -11,6 +11,7 @@ export const useTodos = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const todoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,6 +24,8 @@ export const useTodos = () => {
         setTodos(loadedTodos);
       } catch {
         setErrorMessage(ErrorMessage.LOAD);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -219,6 +222,7 @@ export const useTodos = () => {
     tempTodo,
     isAdding,
     loadingTodos,
+    isLoading,
     todoInput,
     activeTodosCount,
     hasCompletedTodos,

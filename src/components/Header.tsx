@@ -8,6 +8,8 @@ interface Props {
   onAdd: (title: string) => Promise<void>;
   onToggleAll: () => void;
   disabled: boolean;
+  isLoading: boolean;
+  hasTodos: boolean;
 }
 
 export const Header: React.FC<Props> = ({
@@ -16,6 +18,8 @@ export const Header: React.FC<Props> = ({
   onAdd,
   onToggleAll,
   disabled,
+  isLoading,
+  hasTodos,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -26,15 +30,7 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    const trimmedTitle = title.trim();
-
-    if (!trimmedTitle) {
-      setTitle('');
-
-      return;
-    }
-
-    onAdd(trimmedTitle)
+    onAdd(title)
       .then(() => {
         setTitle('');
       })
@@ -43,14 +39,16 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={classNames('todoapp__toggle-all', {
-          active: isEveryTodoCompleted,
-        })}
-        data-cy="ToggleAllButton"
-        onClick={onToggleAll}
-      />
+      {!isLoading && hasTodos && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isEveryTodoCompleted,
+          })}
+          data-cy="ToggleAllButton"
+          onClick={onToggleAll}
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input

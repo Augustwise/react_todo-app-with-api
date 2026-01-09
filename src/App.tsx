@@ -17,6 +17,7 @@ export const App: React.FC = () => {
     tempTodo,
     isAdding,
     loadingTodos,
+    isLoading,
     todoInput,
     activeTodosCount,
     hasCompletedTodos,
@@ -44,6 +45,8 @@ export const App: React.FC = () => {
           onAdd={handleAddTodo}
           onToggleAll={handleToggleAll}
           disabled={isAdding}
+          isLoading={isLoading}
+          hasTodos={todos.length > 0}
         />
 
         <TodoList
