@@ -134,6 +134,24 @@ export const useTodos = () => {
     }
   };
 
+  const handleUpdateTodoTitle = async (todoId: number, title: string) => {
+    setErrorMessage('');
+    setLoadingTodos(previous => [...previous, todoId]);
+
+    try {
+      const updatedTodo = await todosApi.updateTodoTitle(todoId, title);
+
+      setTodos(previousTodos =>
+        previousTodos.map(todo => (todo.id === todoId ? updatedTodo : todo)),
+      );
+    } catch {
+      setErrorMessage(ErrorMessage.UPDATE);
+      throw new Error();
+    } finally {
+      setLoadingTodos(previous => previous.filter(id => id !== todoId));
+    }
+  };
+
   const handleDeleteTodo = async (todoId: number) => {
     setErrorMessage('');
     setLoadingTodos(previous => [...previous, todoId]);
@@ -230,6 +248,7 @@ export const useTodos = () => {
     filteredTodos,
     handleAddTodo,
     handleTodoStatusChange,
+    handleUpdateTodoTitle,
     handleDeleteTodo,
     handleClearCompleted,
     handleToggleAll,

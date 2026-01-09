@@ -4,8 +4,9 @@ import { TodoItem } from './TodoItem';
 
 interface Props {
   todos: Todo[];
-  onDelete: (id: number) => void;
-  onStatusChange: (id: number, completed: boolean) => void;
+  onDelete: (id: number) => Promise<void>;
+  onStatusChange: (id: number, completed: boolean) => Promise<void>;
+  onUpdateTitle: (id: number, title: string) => Promise<void>;
   tempTodo: Todo | null;
   loadingTodos: number[];
 }
@@ -14,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
   onStatusChange,
+  onUpdateTitle,
   tempTodo,
   loadingTodos,
 }) => (
@@ -24,6 +26,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         onDelete={onDelete}
         onStatusChange={onStatusChange}
+        onUpdateTitle={onUpdateTitle}
         isLoading={loadingTodos.includes(todo.id)}
       />
     ))}

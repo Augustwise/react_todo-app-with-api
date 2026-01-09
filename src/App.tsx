@@ -25,6 +25,7 @@ export const App: React.FC = () => {
     filteredTodos,
     handleAddTodo,
     handleTodoStatusChange,
+    handleUpdateTodoTitle,
     handleDeleteTodo,
     handleClearCompleted,
     handleToggleAll,
@@ -53,6 +54,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           onDelete={handleDeleteTodo}
           onStatusChange={handleTodoStatusChange}
+          onUpdateTitle={handleUpdateTodoTitle}
           tempTodo={tempTodo}
           loadingTodos={loadingTodos}
         />
